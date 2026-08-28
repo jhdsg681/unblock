@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Home | Compass</title>
+<meta charset="UTF-8">
+<meta property="og:title" content="Games">
+<meta property="og:description" content="Play thousands of games instantly. Fast, clean, and updated regularly.">
+<meta property="og:url" content="INSERT_WEBSITE_HERE">
+<meta property="og:type" content="website">
+
+<meta name="theme-color" content="#ffdc00">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Games">
+<meta name="twitter:description" content="Play thousands of unblocked games instantly.">
+
+
+<style>
+body{
+    font-family:Arial, sans-serif;
+    background:#111;
+    color:#eee;
+    margin:0;
+}
+
+.page {
+    display:flex;
+    gap:24px;
+    max-width:1200px;
+    margin:0 auto;
+    padding:24px;
+}
+
+.content {
+    flex:1;
+}
+
+.sidebar {
+    width:300px;
+    background:#1b1b1b;
+    border:1px solid #333;
+    border-radius:12px;
+    padding:20px;
+}
+
+.sidebar h2 {
+    margin-top:0;
+    margin-bottom:14px;
+    color:#ffd;
+    font-size:1.1rem;
+}
+
+.sidebar ul {
+    list-style:none;
+    margin:0;
+    padding:0;
+}
+
+    .sidebar li + li,
+    .sidebar li {
+        margin-top:10px;
+    }
+
+    .sidebar-section {
+        margin-top:20px;
+}
+
+.sidebar a {
+    color:#6cf;
+    text-decoration:none;
+    word-break:break-all;
+}
+
+.sidebar a:hover {
+    text-decoration:underline;
+}
+
+input {
+    width:100%;
+    padding:10px;
+    margin-bottom:18px;
+    border-radius:8px;
+    border:1px solid #444;
+    background:#111;
+    color:#eee;
+}
+
+select {
+    width:100%;
+    padding:10px;
+    margin-bottom:18px;
+    border-radius:8px;
+    border:1px solid #444;
+    background:#111;
+    color:#eee;
+}
+
+.header-with-sort {
+    display:flex;
+    gap:20px;
+    align-items:center;
+    margin-bottom:20px;
+}
+
+.header-with-sort h1 {
+    margin:0;
+    flex:1;
+}
+
+.header-with-sort select {
+    width:150px;
+    margin:0;
+}
+
+a{
+    display:block;
+    color:#6cf;
+    padding:3px;
+    text-decoration:none;
+}
+
+a:hover{
+    text-decoration:underline;
+}
+</style>
+<link rel="icon" href="https://greekschoolmentone-vic.compass.education/Assets/Pix/favicon_v11855.png"></head>
+<body>
+
+<div class="page">
+    <main class="content">
+        <div class="header-with-sort">
+            <h1>Games</h1>
+            <select id="sortMethod" onchange="changeSortMethod()">
+                <option value="plays">Plays</option>
+                <option value="alphabetical">Alphabetical</option>
+            </select>
+        </div>
+
+        <input type="text" id="searchInput" placeholder="Search games..." onkeyup="searchGames()">
+        <div id="links"></div>
+    </main>
+
+    <aside class="sidebar">
+        <section class="sidebar-section">
+        </section>
+        <section class="sidebar-section">
+            <h2>Site stats</h2>
+            <ul id="sa-stats">
+                <li>Loading stats...</li>
+            </ul>
+        </section>
+<script>
+let allGames = [];
+const analyticsProxyRoot = "";
+
+async function loadFiles() {
+    const container = document.getElementById("links");
+    container.textContent = "Loading games...";
+
+    const [filenames, analytics] = await Promise.all([
+        fetch("filenames.txt").then(res => res.text()),
+        fetchGameAnalytics().catch(err => {
+            console.warn("Unable to load game analytics", err);
+            return null;
+        }),
+    ]);
+
+    const lines = filenames.split(/\r?\n/);
+    const games = [];
+
+    lines.forEach(file => {
+        file = file.trim();
+        if (!file) return;
+
+        if (
+            file.toLowerCase().endsWith(".html") ||
+            file.toLowerCase().endsWith(".htm")
+        ) {
+            const display = file.replace(/\.(html|htm)$/i, "").replace(/^cl/i, "");
+            const pageKey = `/${file}`;
+            const stats = analytics && analytics[pageKey] ? analytics[pageKey] : { pageviews: 0, visitors: 0 };
+
+            games.push({ file, display, stats });
+        }
+    });
+
+    allGames = games;
+    
+    const savedSortMethod = localStorage.getItem('gameSortMethod') || 'plays';
+    let sortedGames = [...games];
+    
+    if (savedSortMethod === "plays") {
+        sortedGames.sort((a, b) => {
+            const totalA = a.stats.visitors + a.stats.pageviews;
+            const totalB = b.stats.visitors + b.stats.pageviews;
+            const totalDiff = totalB - totalA;
+            if (totalDiff !== 0) return totalDiff;
+            return a.display.localeCompare(b.display, undefined, { numeric: true, sensitivity: 'base' });
+        });
+    } else if (savedSortMethod === "alphabetical") {
+        sortedGames.sort((a, b) => {
+            return a.display.localeCompare(b.display, undefined, { numeric: true, sensitivity: 'base' });
+        });
+    }
+    
+    displayGames(sortedGames);
+}
+
+function displayGames(games) {
+    const container = document.getElementById("links");
+    container.innerHTML = "";
+
+    games.forEach(game => {
+        const a = document.createElement("a");
+        a.href = game.file;
+        const total = game.stats.visitors + game.stats.pageviews;
+        a.textContent = `${game.display} ${total.toLocaleString()} plays`;
+
+        container.appendChild(a);
+    });
+}
+
+function initializeSortMethod() {
+    const savedSortMethod = localStorage.getItem('gameSortMethod') || 'plays';
+    document.getElementById("sortMethod").value = savedSortMethod;
+}
+
+function changeSortMethod() {
+    const sortMethod = document.getElementById("sortMethod").value;
+    localStorage.setItem('gameSortMethod', sortMethod);
+    
+    let sortedGames = [...allGames];
+
+    if (sortMethod === "plays") {
+        sortedGames.sort((a, b) => {
+            const totalA = a.stats.visitors + a.stats.pageviews;
+            const totalB = b.stats.visitors + b.stats.pageviews;
+            const totalDiff = totalB - totalA;
+            if (totalDiff !== 0) return totalDiff;
+            return a.display.localeCompare(b.display, undefined, { numeric: true, sensitivity: 'base' });
+        });
+    } else if (sortMethod === "alphabetical") {
+        sortedGames.sort((a, b) => {
+            return a.display.localeCompare(b.display, undefined, { numeric: true, sensitivity: 'base' });
+        });
+    }
+
+    displayGames(sortedGames);
+}
+
+async function fetchGameAnalytics() {
+    const endDate = new Date().toISOString().split('T')[0];
+    const startDate = "2000-01-01";
+    const url = `https://dashboard.simpleanalytics.com/INSERT_WEBSITE_HERE.json?version=6&start=${startDate}&end=${endDate}&fields=pages&limit=3000&info=false`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+
+    const data = await res.json();
+    if (!data.ok) throw new Error("Analytics response returned ok=false");
+    if (!Array.isArray(data.pages)) throw new Error("Analytics response missing pages data");
+
+    return data.pages.reduce((map, page) => {
+        if (typeof page.value === 'string') {
+            map[page.value] = {
+                pageviews: Number(page.pageviews) || 0,
+                visitors: Number(page.visitors) || 0,
+            };
+        }
+        return map;
+    }, {});
+}
+
+function searchGames() {
+    const input = document.getElementById("searchInput").value.toLowerCase();
+    const links = document.querySelectorAll("#links a");
+
+    links.forEach(link => {
+        link.style.display =
+            link.textContent.toLowerCase().includes(input)
+            ? "block"
+            : "none";
+    });
+}
+
+async function loadSimpleAnalyticsStats() {
+    const list = document.getElementById("sa-stats");
+    
+    const today = new Date().toISOString().split('T')[0];
+    const url = `https://dashboard.simpleanalytics.com/INSERT_WEBSITE_HERE.json?version=6&start=${today}&end=${today}&fields=pageviews,visitors&info=false`;
+
+    try {
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+
+        const data = await res.json();
+        if (!data.ok) throw new Error("Analytics response returned ok=false");
+
+        list.innerHTML = "";
+        const period = document.createElement("li");
+        period.textContent = `Today`;
+        list.appendChild(period);
+
+        const pageviews = document.createElement("li");
+        pageviews.textContent = `${data.pageviews.toLocaleString()} pageviews`;
+        list.appendChild(pageviews);
+
+        const visitors = document.createElement("li");
+        visitors.textContent = `${data.visitors.toLocaleString()} visitors`;
+        list.appendChild(visitors);
+    } catch (err) {
+        list.innerHTML = "<li>Unable to load stats. This is likely caused by using an adblocker.</li>";
+        console.error("load stats failed:", err);
+    }
+}
+
+loadFiles();
+initializeSortMethod();
+loadSimpleAnalyticsStats();
+</script>
+<script data-collect-dnt="true" async src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
+
+</body></html>

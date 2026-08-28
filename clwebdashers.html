@@ -1,0 +1,34 @@
+<html><head><title>Home | Compass</title><base id="baseTag" href="https://web-dashers.github.io/">
+<script>
+    launch();
+
+    function launch() {
+        const baseHref = document.getElementById("baseTag").href;
+
+        try {
+            fetch("https://cdn.jsdelivr.net/gh/web-dashers/web-dashers.github.io@main/index.html?t=" + Date.now())
+                .then(res => res.text())
+                .then(html => {
+                    // Inject <base> directly into <head> BEFORE parsing
+                    if (html.includes("<head>")) {
+                        html = html.replace(
+                            "<head>",
+                            `<head><base href="${baseHref}">`
+                        );
+                    } else {
+                        // fallback if no <head>
+                        html = `<base href="${baseHref}">` + html;
+                    }
+
+                    // Replace document
+                    document.open();
+                    document.write(html);
+                    document.close();
+                });
+        } catch (error) {
+            console.error("error:", error);
+        }
+    }
+</script>
+<link rel="icon" href="https://greekschoolmentone-vic.compass.education/Assets/Pix/favicon_v11855.png"></head><body><script async src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
+</body></html>

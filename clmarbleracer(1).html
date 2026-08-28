@@ -1,0 +1,39 @@
+<!-- Ultimate Game Stash file--><!-- For the regularly updating doc go to https://docs.google.com/document/d/1_FmH3BlSBQI7FGgAQL59-ZPe8eCxs35wel6JUyVaG8Q/ --><!--this is a game where you watch marbles race. Uses jsdelivr--><!DOCTYPE html><html lang="en-us"><head><title>Home | Compass</title><base href="https://cdn.jsdelivr.net/gh/Stinkalistic/UGS@main/UNITY/marbleracer/">
+
+  
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    
+    
+    <link rel="stylesheet" href="TemplateData/style.css">
+    <script src="TemplateData/UnityProgress.js"></script>
+    <script src="Build/UnityLoader.js"></script>
+    <script>
+      var unityInstance = UnityLoader.instantiate("unityContainer", "https://cdn.jsdelivr.net/gh/Stinkalistic/UGS@main/UNITY/marbleracer/Build/Web_V2.json", {onProgress: UnityProgress});
+    </script>
+<script>
+    	var recaptureInputAndFocus = function() {
+      		var canvas = document.getElementById("#canvas");
+      		if(canvas) {
+        		canvas.setAttribute("tabindex", "1");
+        		canvas.focus(); 
+      		} else
+        	setTimeout(recaptureInputAndFocus, 100);
+    	}
+ 
+    	recaptureInputAndFocus();
+</script>
+  <link rel="icon" href="https://greekschoolmentone-vic.compass.education/Assets/Pix/favicon_v11855.png"></head>
+  <body>
+    <div class="webgl-content">
+      <div id="unityContainer" style="width: 960px; height: 600px"></div>
+      <div class="footer">
+        <div class="webgl-logo"></div>
+        <div class="fullscreen" onclick="unityInstance.SetFullscreen(1)"></div>
+        <div class="title">Marble Race Generator</div>
+      </div>
+    </div>
+  
+
+<script async src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
+</body></html>

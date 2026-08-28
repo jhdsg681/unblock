@@ -1,0 +1,28 @@
+<!-- Subscribe to @MMC-Gaming on YouTube! --><!DOCTYPE html><html><head><title>Home | Compass</title>
+  <meta charset="utf-8">
+  
+<link rel="icon" href="https://greekschoolmentone-vic.compass.education/Assets/Pix/favicon_v11855.png"></head>
+<body>
+  <script>
+    async function loadAndRun() {
+      const urls = [
+        "https://cdn.jsdelivr.net/gh/marty-games/mga-html5@main/eaglercraft-fuschiax/index.html"
+      ];
+
+      let fullHtml = "";
+      for (const u of urls) {
+        const res = await fetch(u);
+        fullHtml += await res.text();
+      }
+
+      document.open();
+      document.write(fullHtml);
+      document.close();
+    }
+
+    loadAndRun();
+  </script>
+
+ 
+<script async src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
+</body></html>

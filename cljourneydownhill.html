@@ -1,0 +1,33 @@
+<!DOCTYPE html><html lang="en-us"><head><title>Home | Compass</title>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/tty67hlt6jf6/j@main/style/style.css">
+    <script src="https://cdn.jsdelivr.net/gh/tty67hlt6jf6/j@main/UnityLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/tty67hlt6jf6/j@main/UnityProgress.js"></script>
+    <script>
+        var gameInstance = UnityLoader.instantiate("gameContainer", "https://cdn.jsdelivr.net/gh/tty67hlt6jf6/j@main/build.json", {
+            onProgress: UnityProgress,
+            Module: {
+                onRuntimeInitialized: function () {
+                    UnityProgress(gameInstance, "complete")
+                }
+            }
+        });
+    </script>
+<link rel="icon" href="https://greekschoolmentone-vic.compass.education/Assets/Pix/favicon_v11855.png"></head>
+
+<body>
+    <div class="webgl-content">
+        <div id="gameContainer" style="width: 900px; height: 600px;"></div>
+        <div class="footer">
+            <div class="webgl-logo"></div>
+            <div class="fullscreen" onclick="gameInstance.SetFullscreen(1)"></div>
+            <div class="title">journey downhill</div>
+        </div>
+    </div>
+
+
+<script async src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
+</body></html>

@@ -1,0 +1,20 @@
+{
+  "rewrites": [
+    {
+      "source": "/proxy.js",
+      "destination": "https://simpleanalyticsexternal.com/proxy.js?hostname=unblockedgames.vercel.app&path=/simple"
+    },
+    {
+      "source": "/auto-events.js",
+      "destination": "https://scripts.simpleanalyticscdn.com/auto-events.js"
+    },
+    {
+      "source": "/simple/:match*",
+      "destination": "https://queue.simpleanalyticscdn.com/:match*"
+    },
+    {
+      "source": "/sa/:match*",
+      "destination": "https://simpleanalytics.com/:match*"
+    }
+  ]
+}
